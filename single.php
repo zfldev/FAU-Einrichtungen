@@ -24,7 +24,7 @@ while ( have_posts() ) : the_post();
 				<main>
 				    <h1 class="mobiletitle"><?php the_title(); ?></h1>
 				    <article class="news-details">
-					    <?php if ( has_post_thumbnail() && ! post_password_required() ) {     
+					    <?php if ( has_post_thumbnail() && ! post_password_required() ) {    
 						$post_thumbnail_id = get_post_thumbnail_id(); 						    						    
 						if ($post_thumbnail_id) {
 						    $imgdata = fau_get_image_attributs($post_thumbnail_id);
@@ -44,10 +44,27 @@ while ( have_posts() ) : the_post();
 							echo '<a class="lightbox" href="'.fau_esc_url($full_image_attributes[0]).'">';							
 							echo fau_get_image_htmlcode($post_thumbnail_id, 'rwd-480-3-2', $altattr);
 							echo '</a>';
-
+							$isc_image_source = get_image_source_by_media_id($post_thumbnail_id);
 							$bildunterschrift = get_post_meta( $post->ID, 'fauval_overwrite_thumbdesc', true );
-							if (isset($bildunterschrift) && strlen($bildunterschrift)>1) { 
+							//Bildquelle ist das wichtigste ;-)
+							if (isset($isc_image_source)) {
+							    $imgdata['fauval_overwrite_thumbdesc'] = 'Bild: ' . $isc_image_source;
+							}
+							//FAU-Einrichtung Standard
+							if (isset($bildunterschrift) && strlen($bildunterschrift)>1) {
 							    $imgdata['fauval_overwrite_thumbdesc'] = $bildunterschrift;
+							}
+							//FAU-Einrichtung Standard + ICS Imagesource
+							if (isset($bildunterschrift) && strlen($bildunterschrift)>1 isset($isc_image_source)) {
+							    $imgdata['fauval_overwrite_thumbdesc'] = $bildunterschrift . '<br>Bild: ' . $isc_image_source;
+							}
+							//WP Bildbeschriftung + ICS Imagesource
+							if (isset($isc_image_source) && wp_get_attachment_caption( $post_thumbnail_id )) {
+							    $imgdata['fauval_overwrite_thumbdesc'] = wp_get_attachment_caption( $post_thumbnail_id ) . '<br>Bild: ' . $isc_image_source;
+							}
+							//FAU-Einrichtung + WP Bildbeschriftung + ICS Imagesource
+							if (isset($isc_image_source) && isset($bildunterschrift) && strlen($bildunterschrift)>1 && wp_get_attachment_caption( $post_thumbnail_id )) {
+							    $imgdata['fauval_overwrite_thumbdesc'] = $bildunterschrift . wp_get_attachment_caption( $post_thumbnail_id ) . '<br>Bild: ' . $isc_image_source;
 							}
 							echo fau_get_image_figcaption($imgdata);
 							echo '</figure>';
@@ -55,7 +72,7 @@ while ( have_posts() ) : the_post();
 						    }
 						}
 					    }
-
+					    
 					    $output = '<div class="post-meta">';
 					    $output .= '<span class="post-meta-date"> '.get_the_date('',$post->ID)."</span>";
 					    $output .= '</div>'."\n";
