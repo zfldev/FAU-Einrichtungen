@@ -55,7 +55,7 @@ while ( have_posts() ) : the_post();
 							    $imgdata['fauval_overwrite_thumbdesc'] = $bildunterschrift;
 							}
 							//FAU-Einrichtung Standard + ICS Imagesource
-							if (isset($bildunterschrift) && strlen($bildunterschrift)>1 isset($isc_image_source)) {
+							if (isset($bildunterschrift) && strlen($bildunterschrift)>1 && isset($isc_image_source)) {
 							    $imgdata['fauval_overwrite_thumbdesc'] = $bildunterschrift . '<br>Bild: ' . $isc_image_source;
 							}
 							//WP Bildbeschriftung + ICS Imagesource
